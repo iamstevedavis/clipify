@@ -1,96 +1,107 @@
 # Clipify
 
-Clipify is a clipboard history manager built with Go. It allows users to monitor clipboard activity, save clipboard history, and view it through a system tray interface.
+Clipify is a small clipboard history app written in Go. It watches the clipboard, stores copied text in a local JSON history file, and exposes a tray menu action to open a history window where previous entries can be reviewed and copied back to the clipboard.
 
-## Features
+## Current status
 
-- **Clipboard Monitoring**: Automatically tracks clipboard changes.
-- **History Management**: Saves clipboard history to a JSON file for persistence.
-- **System Tray Integration**: Provides a tray icon with options to view history or quit the application.
-- **Cross-Platform Support**: Works on Windows, macOS, and Linux.
+This repo looks like an early desktop prototype.
 
-## Project Structure
+What is implemented today:
+- clipboard polling and change detection
+- persistent history storage in `runtime/history.json`
+- tray icon with:
+  - `Show History`
+  - `Quit`
+- Gio-based history window
+- click an item in the history window to copy it back to the clipboard
 
-```
+## How it works
+
+- `internal/clipboard` polls the system clipboard and emits changes
+- `internal/history` loads and saves clipboard entries as JSON
+- `internal/tray` starts the system tray icon and menu
+- `internal/ui` renders the clipboard history window
+- `cmd/main.go` wires everything together
+
+## Project structure
+
+```text
 .
-├── assets/             # Contains application assets like icons
-├── bin/                # Build output directory
-├── cmd/                # Main application entry point
-├── internal/           # Internal packages
-│   ├── clipboard/      # Clipboard monitoring logic
-│   ├── history/        # History management logic
-│   ├── tray/           # System tray integration
-│   ├── ui/             # User interface logic
-├── runtime/            # Runtime files (e.g., history.json)
-├── .vscode/            # VS Code configuration files
-├── build.ps1           # Build script for Windows
-├── go.mod              # Go module file
-├── go.sum              # Go dependencies checksum
-├── LICENSE             # License file
-├── README.md           # Project documentation
+├── assets/                # Icons and app assets
+├── build.ps1              # Windows build helper
+├── cmd/                   # Application entry point
+├── internal/
+│   ├── clipboard/         # Clipboard monitoring + read/write helpers
+│   ├── history/           # JSON persistence for clipboard history
+│   ├── tray/              # System tray setup and menu actions
+│   └── ui/                # Gio-based history window
+├── LICENSE
+└── README.md
 ```
 
-## Installation
+## Runtime behavior
 
-1. Clone the repository:
+At startup, Clipify:
+- creates a `runtime/` directory in the current working directory if needed
+- stores clipboard history in `runtime/history.json`
+- loads its tray icon from `assets/icons/icon.ico`
+- opens a history window when `Show History` is clicked from the tray
 
-   ```sh
-   git clone https://github.com/your-username/clipify.git
-   cd clipify
-   ```
+## Build
 
-2. Install dependencies:
+### Windows PowerShell
 
-   ```sh
-   go mod tidy
-   ```
+The repo includes a helper script for Windows:
 
-3. Build the project:
+```powershell
+./build.ps1
+```
 
-   ```sh
-   go build -o bin/Clipify.exe cmd/main.go
-   ```
+That script builds:
 
-## Usage
+```text
+bin/Clipify.exe
+```
 
-1. Run the application:
+and copies the `assets/` directory into `bin/assets`.
 
-   ```sh
-   ./bin/Clipify.exe
-   ```
+### Manual build
 
-2. Access the system tray icon to view clipboard history or quit the application.
+```sh
+go build -o bin/Clipify.exe ./cmd
+```
 
-## Configuration
+## Run
 
-- **Data Directory**: Stores runtime files like `history.json`. Default: `runtime/`.
-- **Assets Directory**: Stores application assets like icons. Default: `assets/icons`.
+### From source
 
-## Development
+```sh
+go run ./cmd
+```
 
-### Prerequisites
+### From the built executable
 
-- Go 1.20 or later
-- A code editor (e.g., Visual Studio Code)
+```powershell
+./bin/Clipify.exe
+```
 
-### Running Locally
+## Notes and limitations
 
-1. Start the application:
+- The current implementation is primarily shaped around a Windows-style build flow.
+- The tray icon expects `assets/icons/icon.ico`.
+- Clipboard history is stored as plain JSON locally.
+- The app currently focuses on text clipboard history, not rich content.
+- This README intentionally describes the code that is present today, not a broader future vision.
 
-   ```sh
-   go run cmd/main.go
-   ```
+## Development ideas
 
-2. Modify the code in the `internal/` directory to add new features or fix bugs.
-
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request.
+Likely next improvements:
+- deduplicate repeated clipboard entries
+- add history limits and pruning
+- improve search/filtering in the history window
+- support deleting or pinning entries
+- package the app cleanly for Windows and other desktop platforms
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-## Acknowledgments
-
-- [systray](https://github.com/getlantern/systray) for system tray integration.
