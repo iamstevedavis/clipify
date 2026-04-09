@@ -1,5 +1,8 @@
 Write-Host "Building Clipify.exe..."
 
+# Ensure output directory exists
+New-Item -ItemType Directory -Force -Path "bin" | Out-Null
+
 # Build the executable
 go build -ldflags "-H windowsgui" -o bin/Clipify.exe ./cmd
 if ($?) {
