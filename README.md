@@ -1,6 +1,9 @@
 # Clipify
 
-Clipify is a small clipboard history app written in Go. It watches the clipboard, stores copied text in a local JSON history file, and exposes a tray menu action to open a history window where previous entries can be reviewed and copied back to the clipboard.
+[![Release Windows EXE](https://github.com/iamstevedavis/clipify/actions/workflows/release.yml/badge.svg)](https://github.com/iamstevedavis/clipify/actions/workflows/release.yml)
+[![Latest Release](https://img.shields.io/github/v/release/iamstevedavis/clipify?display_name=tag)](https://github.com/iamstevedavis/clipify/releases/latest)
+
+A small Windows-friendly clipboard history app in Go with release-built `.exe` artifacts.
 
 ## Current status
 
