@@ -7,8 +7,6 @@ A small Windows-friendly clipboard history app in Go with release-built `.exe` a
 
 ## Current status
 
-This repo looks like an early desktop prototype.
-
 What is implemented today:
 - clipboard polling and change detection
 - persistent history storage in `runtime/history.json`
